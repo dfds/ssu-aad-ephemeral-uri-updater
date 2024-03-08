@@ -31,7 +31,7 @@ jobs:
         shell: bash
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      - uses: dfds/ssu-apps/.github/actions/build_push_container_ecr@master
+      - uses: ./.github/actions/build_push_container_ecr
         name: Build & push container
         id: build_push_container
         with:
