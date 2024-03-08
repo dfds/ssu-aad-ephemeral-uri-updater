@@ -35,7 +35,7 @@ jobs:
         name: Build & push container
         id: build_push_container
         with:
-          context_path: ./services/ssu-aad-ephemeral-uri-updater
+          context_path: .
           tag: ${{ steps.vars.outputs.tag }}
           repo: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-1.amazonaws.com/ssu-aad-ephemeral-uri-updater
           role_arn: ${{ secrets.GH_IAM_ROLE }}
