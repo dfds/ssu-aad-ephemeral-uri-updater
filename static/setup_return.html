@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>Login redirect handler</title>
+</head>
+<body>
+<script>
+    const queryParams = new URLSearchParams(window.location.search);
+    var code = queryParams.get("code");
+    console.log(code);
+
+    let postUrl = window.location.href;
+    postUrl = postUrl.replaceAll("return", "submitCode")
+
+    if (code == undefined) {
+      console.log("Missing token response code")
+      document.body.innerHTML += `<div>Missing token response code, setup incomplete.</div>`;
+    } else {
+      document.body.innerHTML += `<div>Forwarding token response code to service.</div><form id="accessTokenForm" action=${postUrl} method="post"><input type="hidden" name="code" value="${code}"></form>`;
+      document.getElementById("accessTokenForm").submit();
+    }
+</script>
+</body>
+</html>

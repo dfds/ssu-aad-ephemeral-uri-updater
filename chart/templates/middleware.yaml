@@ -1,0 +1,18 @@
+{{- if .Values.ingress.prefixMiddleware.enabled -}}
+{{- $fullName := include "ssu-aad-ephemeral-uri-updater.fullname" . -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-prefix
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "ssu-aad-ephemeral-uri-updater.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  stripPrefix:
+    prefixes:
+      - {{ .Values.ingress.prefixMiddleware.prefix }}
+{{- end }}

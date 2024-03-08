@@ -1,0 +1,55 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "ssu-aad-ephemeral-uri-updater.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "ssu-aad-ephemeral-uri-updater.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  entryPoints: []
+  routes:
+  {{- if .Values.ingress.routes -}}
+  {{- with .Values.ingress.routes }}
+    {{- toYaml . | nindent 4}}
+
+  {{- end }}
+
+  {{ else }}
+    - kind: Rule
+      match: {{ .Values.ingress.match }}
+
+      {{- if or .Values.ingress.middlewares .Values.ingress.prefixMiddleware.enabled }}
+      middlewares:
+      {{- with .Values.ingress.middlewares }}
+        {{- toYaml . | nindent 8 -}}
+      {{- end }}
+
+      {{- if .Values.ingress.prefixMiddleware.enabled }}
+        - name: {{ $fullName }}-prefix
+          namespace: {{ .Release.Namespace }}
+      {{- end }}
+
+      {{- end }}
+
+      {{- if .Values.ingress.services -}}
+      {{- with .Values.ingress.services }}
+      services:
+        {{- toYaml . | nindent 8}}
+      {{- end }}
+      {{ else }}
+      services:
+        - kind: Service
+          name: {{ include "ssu-aad-ephemeral-uri-updater.fullname" . }}
+          namespace: {{ .Release.Namespace }}
+          port: http
+      {{- end }}
+  {{- end }}
+
+{{- end }}

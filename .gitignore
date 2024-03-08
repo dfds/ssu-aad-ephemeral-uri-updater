@@ -1,0 +1,6 @@
+.env
+build
+dump.txt
+data.json
+cmds/rice-box.go
+model/static/rice-box.go

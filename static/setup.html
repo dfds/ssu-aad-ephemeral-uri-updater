@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>SAEUU setup</title>
+</head>
+<body>
+<script>
+  let returnUrl = `${window.location.href}/return`;
+  let tenantUrl = window.location.href.replaceAll("setup", "api/tenant")
+  console.log(returnUrl);
+
+  fetch(new Request(tenantUrl))
+  .then((resp) => {
+    resp.json().then(tenant => {
+      window.location.href = `https://login.microsoftonline.com/${tenant.tenantId}/oauth2/v2.0/authorize?client_id=${tenant.clientId}&response_type=code&redirect_uri=${encodeURIComponent(returnUrl)}&scope=offline_access .default`
+    })
+  })
+
+</script>
+</body>
+</html>
