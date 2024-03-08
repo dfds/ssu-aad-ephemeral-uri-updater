@@ -1,0 +1,41 @@
+name: ssu-aad-ephemeral-uri-updater build
+
+on:
+  push:
+    branches:
+      - "master"
+  workflow_dispatch:
+    inputs:
+      deploy:
+        default: false
+        required: false
+        type: boolean
+        description: "Trigger build"
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name:  '01 - Linux'
+    runs-on: [ubuntu-22.04]
+    strategy:
+      matrix:
+        arch: ['x86_64']
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - uses: dfds/ssu-apps/.github/actions/build_push_container_ecr@master
+        name: Build & push container
+        id: build_push_container
+        with:
+          context_path: ./services/ssu-aad-ephemeral-uri-updater
+          tag: latest
+          repo: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-1.amazonaws.com/ssu-aad-ephemeral-uri-updater
+          role_arn: ${{ secrets.GH_IAM_ROLE }}
+          aws_region: eu-west-1
+          sha_tag_prefix: sha
